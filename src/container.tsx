@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 /*
 
 Componente --> uma função reutilisavel que retorna JSX, JavaScript com XML (linguagem de marcação de texto)
@@ -10,34 +11,35 @@ States --> São estados da estrutura/infromações que podem ser alteradas
 
 Props --> são informações que vc pode passar para um componente, passar parametros
 
-Hooks
+Hooks --> iniciam com "use" e só pode usar ele no começo do componente
+
+useState = devolve uma variavel e uma função setVariavel
+            setVariavel serve para alterar o valor da variavel, ela serve
+            para que o progama veja se é preciso renderizar
 
 
 */
 
- 
 
 interface ContainerProps{
     nome:string
 }
 
 function Container(props:ContainerProps){
-    let contador = 10;
-    
-    
+    const [texto, setTexto] = useState("Coloque um texto")
 
-    function mudar(){
-        contador += 1
-    }
-    
+        function trataInput(event:React.ChangeEvent<HTMLInputElement>){
+            setTexto(event.currentTarget.value)
+        }
     
     return( 
         <>
         
             <h1>{props.nome}</h1>
-            valor Contado: {contador}
-            <button onClick={mudar()}></button>
-        
+            texto: {texto}
+           
+            <input type="text" placeholder="Mostrar Texto" onChange={trataInput}/>
+
         </>
     )
 }
