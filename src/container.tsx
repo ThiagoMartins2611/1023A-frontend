@@ -37,6 +37,7 @@ function Container(props:ContainerProps){
         
             <h1>{props.nome}</h1>
             texto: {texto}
+            <br />
            
             <input type="text" placeholder="Mostrar Texto" onChange={trataInput}/>
 
