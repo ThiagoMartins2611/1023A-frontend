@@ -8,24 +8,50 @@ interface ProdutosState{
     
 }
 
+//inputInfo base 
 
 function Pagina(){
 
     const [produtos, setProdutos] = useState<ProdutosState[]>([])
-    const [InputProdutos, setInputProdutos] = useState<ProdutosState[]>([]);
+    const [inputObj, setInputObj] = useState<ProdutosState>({
+        id: 0,
+        nome: "",
+        categoria: "",
+        preco: 0
+    })
+
 
 
     function inputForms(event:React.ChangeEvent<HTMLInputElement>){ 
-
         
+        const name = event.currentTarget.name as keyof ProdutosState;
+        const value = event.currentTarget.value;
 
+        setInputObj({
+            ...inputObj,
+            [name]: (name === "preco" || name === "id") ? Number(value): value
+            
+        })
+        
     }
 
-    function trataForms(){
-        
 
+
+    function trataForms(event:React.FormEvent<HTMLFormElement>){
+        event.preventDefault()
+
+        setProdutos([...produtos, inputObj])
+        limparFormulario();
     }
 
+    function limparFormulario(){
+        setInputObj({
+            id: 0,
+            nome: "",
+            categoria: "",
+            preco: 0
+        })
+    }
 
 
     return(<>
@@ -57,10 +83,10 @@ function Pagina(){
                 {produtos.map(produto=>{
                     return(
                         <div className="produto">
-                            {produto.id}<br />
-                            {produto.nome}<br />
-                            {produto.categoria}<br />
-                            {produto.preco}
+                            ID: {produto.id}<br />
+                            NOME: {produto.nome}<br />
+                            CATEGORIA: {produto.categoria}<br />
+                            PREÇO: {produto.preco}
                         </div>
                     )
                 })
@@ -68,21 +94,26 @@ function Pagina(){
             </div>
 
             <div id="formsLocal">
-                <form action="submit">
+                <form action="submit" onSubmit={trataForms}>
                     
                     <label htmlFor="id">Id</label>
-                    <input type="text" name="id" id="inputId" onChange={inputForms} />
+                    <input type="text" name="id" id="inputId" value={
+                        
+                        Number.isNaN(inputObj.id) ?  setInputObj({...inputObj, id: 0}) : inputObj.id  
+                            
+
+                        } onChange={inputForms} />
 
                     <label htmlFor="nome">Nome</label>
-                    <input type="text" name="nome" id="inputNome" onChange={inputForms} />
+                    <input type="text" name="nome" id="inputNome" value={inputObj.nome} onChange={inputForms} />
 
                     <label htmlFor="categoria">Categoria</label>
-                    <input type="text" name="categoria" id="inputCategoria" onChange={inputForms} />
+                    <input type="text" name="categoria" id="inputCategoria" value={inputObj.categoria} onChange={inputForms} />
 
                     <label htmlFor="preco">Preço</label>
-                    <input type="text" name="preco" id="inputPreco" onChange={inputForms} />
+                    <input type="text" name="preco" id="inputPreco" value={inputObj.preco} onChange={inputForms} />
 
-                    <input type="submit" value="Cadastrar" onClick={trataForms} />
+                    <input type="submit" value="Cadastrar" />
 
                 </form>
             </div>
