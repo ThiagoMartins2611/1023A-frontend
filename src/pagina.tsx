@@ -9,13 +9,16 @@ interface ProdutosState{
     
 }
 
+interface mensagem{
+    erro:string,
+    inputSemValor:string
+    
+}
+
 //inputInfo base 
 
 function Pagina(){
 
-    useEffect(()=>{
-
-    }, []);
 
     const [produtos, setProdutos] = useState<ProdutosState[]>([])
     const [inputObj, setInputObj] = useState<ProdutosState>({
@@ -24,6 +27,31 @@ function Pagina(){
         categoria: "",
         preco: 0
     })
+
+    const [mensagem, setMensagem] = useState<mensagem>()
+
+
+
+
+    useEffect(()=>{
+
+        async function buscaDados(){
+            const res = await fetch("http://localhost:8000/produtos");
+            
+            if(res.status===200){
+                const dados = await res.json()
+                setProdutos(dados)
+
+                
+            }
+            if(res.status===400){
+                
+            }
+        }
+
+        buscaDados()
+    }, []);
+
 
 
 
@@ -50,18 +78,29 @@ function Pagina(){
         event.preventDefault()
 
 
-        if(parseFloat(inputObj.preco as any)){
+        if(
+            inputObj.id != 0 &&
+            inputObj.nome != "" &&
+            inputObj.categoria != "" &&
+            inputObj.preco != 0
+        ){
 
             setInputObj({
                 ...inputObj,
-                preco: (inputObj.preco as any).replace(",", ".") as any
+                preco: inputObj.preco
             })
 
             setProdutos([...produtos, inputObj])
             limparFormulario();
+
         }else{
-            console.log("a")
+            setMensagem({
+                erro: "",
+                inputSemValor: "Por favor preencher todos os espaços"
+            })
         }
+
+
         
     }
 
@@ -117,6 +156,11 @@ function Pagina(){
             </div>
 
             <div id="formsLocal">
+
+                <div id="aviso">
+                    <h3>{mensagem?.inputSemValor}</h3>
+                </div>
+                
                 <form action="submit" onSubmit={trataForms}>
                     
                     <label htmlFor="id">Id</label>
