@@ -10,8 +10,11 @@ interface ProdutosState{
 }
 
 interface mensagem{
+    erroDoServidor:string,
     erro:string,
+    erroDataBase:string,
     inputSemValor:string
+    
     
 }
 
@@ -28,7 +31,12 @@ function Pagina(){
         preco: 0
     })
 
-    const [mensagem, setMensagem] = useState<mensagem>()
+    const [mensagem, setMensagem] = useState<mensagem>({
+        erroDoServidor: "",
+        erro: "erro",
+        erroDataBase: "",
+        inputSemValor: ""
+    })
 
 
 
@@ -36,20 +44,33 @@ function Pagina(){
     useEffect(()=>{
 
         async function buscaDados(){
-            const res = await fetch("http://localhost:8000/produtos");
+
+           try {
+                const res = await fetch("http://localhost:8000/produtos");
             
-            if(res.status===200){
-                const dados = await res.json()
-                setProdutos(dados)
+                if(res.status===200){
+                    const dados = await res.json()
+                    setProdutos(dados)
 
-                
-            }
-            if(res.status===400){
-                
-            }
+                }
+
+                if(res.status===400){
+                    setMensagem({
+                        ...mensagem,
+                        erroDoServidor: "Falha ao receber resposta do servidor"
+                    })
+                }
+            
+           } catch (error) {
+                setMensagem({
+                    ...mensagem,
+                    erroDataBase:"Erro ao conectar com o banco"
+                })
+           } 
+        
         }
+        buscaDados();
 
-        buscaDados()
     }, []);
 
 
@@ -92,10 +113,14 @@ function Pagina(){
 
             setProdutos([...produtos, inputObj])
             limparFormulario();
+             setMensagem({
+                ...mensagem,
+                inputSemValor: ""
+            })
 
         }else{
             setMensagem({
-                erro: "",
+                ...mensagem,
                 inputSemValor: "Por favor preencher todos os espaços"
             })
         }
@@ -157,10 +182,11 @@ function Pagina(){
 
             <div id="formsLocal">
 
-                <div id="aviso">
-                    <h3>{mensagem?.inputSemValor}</h3>
-                </div>
-                
+                {mensagem.inputSemValor &&
+                    <div id="inputErro">
+                        <h3>{mensagem.inputSemValor}</h3>
+                    </div>
+                }
                 <form action="submit" onSubmit={trataForms}>
                     
                     <label htmlFor="id">Id</label>
@@ -184,6 +210,12 @@ function Pagina(){
                 </form>
             </div>
 
+            {mensagem.erroDataBase || mensagem.erroDoServidor &&
+                <div id="errosDoServidor">
+                    <h3>{mensagem.erroDataBase}</h3>
+                    <h3>{mensagem.erroDoServidor}</h3>
+                </div>
+            }
 
         </main>
 
