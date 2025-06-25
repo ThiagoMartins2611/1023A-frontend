@@ -13,6 +13,7 @@ interface mensagem{
     erroDoServidor:string,
     erro:string,
     erroDataBase:string,
+    connServidor:string,
     inputSemValor:string
     
     
@@ -35,6 +36,7 @@ function Pagina(){
         erroDoServidor: "",
         erro: "erro",
         erroDataBase: "",
+        connServidor:"",
         inputSemValor: ""
     })
 
@@ -46,11 +48,13 @@ function Pagina(){
         async function buscaDados(){
 
            try {
-                const res = await fetch("http://localhost:8000/produtos");
+                const res = await fetch("http://localhost:8000/ShowProdutos");
             
                 if(res.status===200){
                     const dados = await res.json()
-                    setProdutos(dados)
+                    setProdutos(dados.dados)
+
+                    console.log(dados.mensagem)
 
                 }
 
@@ -95,7 +99,7 @@ function Pagina(){
 
 
 
-    function trataForms(event:React.FormEvent<HTMLFormElement>){
+    async function trataForms(event:React.FormEvent<HTMLFormElement>){
         event.preventDefault()
 
 
@@ -118,14 +122,37 @@ function Pagina(){
                 inputSemValor: ""
             })
 
+            const res = fetch("http://localhost:8000/SalvarProdutos", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify(inputObj)
+            })
+
+            if((await res).status === 200){
+                setMensagem({
+                    ...mensagem,
+                    connServidor: "Produtos enviados ao servidor"
+                })
+                
+                setTimeout(() => {
+                    setMensagem({
+                        ...mensagem,
+                        connServidor: ""
+                    })
+                }, 5000);
+            }
+            
+            
+
         }else{
             setMensagem({
                 ...mensagem,
                 inputSemValor: "Por favor preencher todos os espaços"
             })
         }
-
-
         
     }
 
@@ -211,9 +238,19 @@ function Pagina(){
             </div>
 
             {mensagem.erroDataBase || mensagem.erroDoServidor &&
+                <>
                 <div id="errosDoServidor">
                     <h3>{mensagem.erroDataBase}</h3>
                     <h3>{mensagem.erroDoServidor}</h3>
+                </div>
+                </>
+            }
+
+            {
+                mensagem.connServidor &&
+
+                <div id="boasDoServidor">
+                    <h3>{mensagem.connServidor}</h3>
                 </div>
             }
 
