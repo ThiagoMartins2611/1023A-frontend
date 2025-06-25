@@ -171,7 +171,7 @@ function Pagina(){
     return(<>
 
         <header>
-            <div>Logo</div>
+            <div className="logo">Logo</div>
             <nav>
                 <ul>
 
@@ -235,24 +235,24 @@ function Pagina(){
                     <input type="submit" value="Cadastrar" />
 
                 </form>
+
+                   {mensagem.erroDataBase || mensagem.erroDoServidor &&
+                        <>
+                        <div id="errosDoServidor">
+                            <h3>{mensagem.erroDataBase}</h3>
+                            <h3>{mensagem.erroDoServidor}</h3>
+                        </div>
+                        </>
+                    }
+
+                {
+                    mensagem.connServidor &&
+
+                    <div id="boasDoServidor">
+                        <h3>{mensagem.connServidor}</h3>
+                    </div>
+                }
             </div>
-
-            {mensagem.erroDataBase || mensagem.erroDoServidor &&
-                <>
-                <div id="errosDoServidor">
-                    <h3>{mensagem.erroDataBase}</h3>
-                    <h3>{mensagem.erroDoServidor}</h3>
-                </div>
-                </>
-            }
-
-            {
-                mensagem.connServidor &&
-
-                <div id="boasDoServidor">
-                    <h3>{mensagem.connServidor}</h3>
-                </div>
-            }
 
         </main>
 
