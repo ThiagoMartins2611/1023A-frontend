@@ -15,15 +15,20 @@ interface mensagem{
     erroDataBase:string,
     connServidor:string,
     inputSemValor:string
-    
-    
+}
+interface position{
+    x: number,
+    y: number
 }
 
 //inputInfo base 
 
 function Pagina(){
 
-
+    const [position, setPosition] = useState<position>({
+        x: 0,
+        y: 0
+    });
     const [produtos, setProdutos] = useState<ProdutosState[]>([])
     const [inputObj, setInputObj] = useState<ProdutosState>({
         id: 0,
@@ -165,9 +170,34 @@ function Pagina(){
         })
     }
 
+    function move(event:React.KeyboardEvent<HTMLElement>){
+        
+        const {key} = event;
+
+        setPosition((prev)=>{
+            switch(key){
+                case "ArrowUp":
+                    return {...prev, y: prev.y -10};
+
+                case "ArrowDown":
+                    return { ...prev, y: prev.y + 10 };
+
+                case "ArrowLeft":
+                    return { ...prev, x: prev.x - 10 };
+
+                case "ArrowRight":
+                    return { ...prev, x: prev.x + 10 };
+
+                default:
+                    return prev;
+            }
+
+           
+        });
+        
+    }
+
  
-
-
     return(<>
 
         <header>
@@ -254,6 +284,15 @@ function Pagina(){
                 }
             </div>
 
+            <div id="teste" tabIndex={0} onKeyDown={move} style={
+                {
+                    position: "absolute",
+                    top: `${position.y}px`,
+                    left: `${position.x}px`
+                }
+            }   >
+
+            </div>
         </main>
 
         <footer></footer>
